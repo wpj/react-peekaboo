@@ -1,9 +1,9 @@
 import React, { createRef, Component } from 'react';
 import { debounce, throttle } from 'lodash';
 
-import { Provider as ContextProvider, DEFAULT_STATE } from '../context';
+import { Provider as ContextProvider, DEFAULT_STATE } from './context';
 
-export default class Scroll extends Component {
+export default class Provider extends Component {
   childRef = createRef();
 
   state = DEFAULT_STATE;

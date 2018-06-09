@@ -1,9 +1,6 @@
 import { createContext } from 'react';
 
 export const DEFAULT_STATE = {
-  useObserver: false,
-  observer: null,
-  changes: [],
   counter: 0,
 };
 

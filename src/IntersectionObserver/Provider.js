@@ -1,7 +1,7 @@
 import React, { createRef, Component } from 'react';
 import { number, string, object, oneOfType, arrayOf } from 'prop-types';
 
-import { Provider as ContextProvider, DEFAULT_STATE } from '../context';
+import { Provider as ContextProvider, DEFAULT_STATE } from './context';
 
 export default class Provider extends Component {
   static propTypes = {

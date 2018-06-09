@@ -2,13 +2,16 @@ import { createRef, Component } from 'react';
 import { func, array } from 'prop-types';
 import memoize from 'memoize-one';
 
+import { Consumer as ContextConsumer } from './context';
+import { createContextWrapper } from '../utils';
+
 function getUpdatedEntry(changes, ref, entry) {
   const updatedEntry = changes.find(e => e.target == ref);
 
   return updatedEntry || entry;
 }
 
-export default class Observer extends Component {
+class Consumer extends Component {
   static propTypes = {
     changes: array,
     observe: func,
@@ -63,3 +66,5 @@ export default class Observer extends Component {
     });
   }
 }
+
+export default createContextWrapper(ContextConsumer, Consumer);

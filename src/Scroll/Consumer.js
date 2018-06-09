@@ -1,5 +1,8 @@
 import { createRef, PureComponent } from 'react';
 
+import { Consumer as ContextConsumer } from './context';
+import { createContextWrapper } from '../utils';
+
 function isElementInViewport(element) {
   var rect = element.getBoundingClientRect();
   var elemTop = rect.top;
@@ -9,7 +12,7 @@ function isElementInViewport(element) {
   return elemTop < window.innerHeight && elemBottom >= 0;
 }
 
-export default class Scroll extends PureComponent {
+class Consumer extends PureComponent {
   childRef = createRef();
 
   state = { isInViewport: false };
@@ -39,3 +42,5 @@ export default class Scroll extends PureComponent {
     });
   }
 }
+
+export default createContextWrapper(ContextConsumer, Consumer);

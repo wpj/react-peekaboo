@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { Provider, Visible } from '../src';
+import { Provider, Consumer } from '../src';
 
 const urls = [...Array(5).keys()].map(i => `/${i}`);
 
@@ -19,7 +19,7 @@ export default class Main extends Component {
               ref={providerRef}
             >
               {urls.map(url => (
-                <Visible key={url}>
+                <Consumer key={url}>
                   {({ ref: childRef, isInViewport }) => {
                     const inViewText = `${url} in viewport: ${isInViewport}`;
                     return (
@@ -51,7 +51,7 @@ export default class Main extends Component {
                       </div>
                     );
                   }}
-                </Visible>
+                </Consumer>
               ))}
             </div>
           );
