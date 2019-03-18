@@ -1,29 +1,72 @@
 {
-  "name": "visibility",
-  "version": "1.0.0",
-  "main": "index.js",
+  "name": "react-peekaboo",
+  "description": "React component that notifies when its child enters or exits the viewport",
+  "version": "0.0.0",
   "license": "MIT",
+  "author": "Wyatt Johnston <w@wyatt.page",
+  "reposity": "wpj/react-peekaboo",
+  "main": "dist/index.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "**/*.{js,jsx,ts,tsx,md}": [
+      "prettier --write",
+      "git add"
+    ]
+  },
   "scripts": {
-    "examples": "x0 examples",
-    "test": "jest",
-    "test:watch": "jest --watch"
+    "build": "tsc && rollup -c",
+    "dev": "cross-env NODE_ENV=dev next dev",
+    "prebuild": "rimraf compiled dist",
+    "prepublish": "npm run test && npm run build",
+    "test:jest:e2e": "jest -c jest.config.e2e.js",
+    "test:e2e": "start-server-and-test dev \"http://localhost:3000/io|http://localhost:3000/scroll\" test:jest:e2e",
+    "test": "npm run test:e2e",
+    "typecheck": "tsc"
   },
   "devDependencies": {
-    "@compositor/x0": "^6.0.7",
-    "babel-eslint": "^10.0.1",
-    "babel-jest": "^24.1.0",
-    "babel-plugin-emotion": "^10.0.7",
-    "babel-preset-env": "^1.7.0",
-    "babel-preset-react": "^6.24.1",
-    "babel-preset-stage-0": "^6.24.1",
-    "cypress": "^3.1.5",
-    "eslint": "^5.14.1",
-    "eslint-plugin-react": "^7.12.4",
-    "jest": "^24.1.0"
+    "@babel/core": "^7.3.4",
+    "@babel/plugin-proposal-class-properties": "^7.3.4",
+    "@babel/plugin-transform-runtime": "^7.3.4",
+    "@babel/preset-env": "^7.3.4",
+    "@babel/preset-react": "^7.0.0",
+    "@babel/preset-typescript": "^7.3.3",
+    "@types/jest": "^24.0.11",
+    "@types/lodash.throttle": "^4.1.6",
+    "@types/react": "^16.8.8",
+    "@types/react-dom": "^16.8.2",
+    "@zeit/next-typescript": "^1.1.1",
+    "babel-jest": "^24.5.0",
+    "cross-env": "^5.2.0",
+    "husky": "^1.3.1",
+    "jest": "^24.5.0",
+    "jest-puppeteer": "^4.1.0",
+    "lint-staged": "^8.1.5",
+    "next": "^8.0.3",
+    "prettier": "^1.16.4",
+    "puppeteer": "^1.13.0",
+    "react": "^16.8.4",
+    "react-dom": "^16.8.4",
+    "rimraf": "^2.6.3",
+    "rollup": "^1.6.0",
+    "rollup-plugin-babel": "^4.3.2",
+    "rollup-plugin-commonjs": "^9.2.1",
+    "rollup-plugin-node-resolve": "^4.0.1",
+    "start-server-and-test": "^1.7.12",
+    "typescript": "^3.3.3333"
   },
   "dependencies": {
-    "@emotion/core": "^10.0.7",
-    "memoize-one": "^5.0.0",
-    "react": "^16.8.3"
+    "lodash.throttle": "^4.1.1"
+  },
+  "peerDependencies": {
+    "react": ">=16"
   }
 }
