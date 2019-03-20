@@ -1,5 +1,7 @@
 # `react-peekaboo`
 
+[![Build Status](https://cloud.drone.io/api/badges/wpj/react-peekaboo/status.svg)](https://cloud.drone.io/wpj/react-peekaboo)
+
 React component that notifies you when its child enters or exits the viewport.
 Under the hood, it uses the `IntersectionObserver` API in supported environments
 and falls back to listening for `scroll` and `resize` events in combination with

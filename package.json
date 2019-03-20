@@ -35,12 +35,15 @@
   },
   "scripts": {
     "build": "tsc && rollup -c",
+    "ci": "npm run test:e2e:ci",
     "dev": "cross-env NODE_ENV=dev next dev",
     "prebuild": "rimraf compiled dist",
-    "prepublish": "npm run test && npm run build",
-    "test:jest:e2e": "jest -c jest.config.e2e.js",
-    "test:e2e": "start-server-and-test dev \"http://localhost:3000/io|http://localhost:3000/scroll\" test:jest:e2e",
+    "prepublishOnly": "npm run test && npm run build",
     "test": "npm run test:e2e",
+    "test:e2e": "start-server-and-test dev \"http://localhost:3000/io|http://localhost:3000/scroll\" test:jest:e2e",
+    "test:e2e:ci": "start-server-and-test dev \"http://localhost:3000/io|http://localhost:3000/scroll\" test:jest:e2e:ci",
+    "test:jest:e2e": "jest -c jest.config.e2e.js",
+    "test:jest:e2e:ci": "cross-env CI=true jest -c jest.config.e2e.js --runInBand",
     "typecheck": "tsc"
   },
   "devDependencies": {
