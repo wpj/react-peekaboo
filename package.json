@@ -4,10 +4,21 @@
   "version": "0.1.1",
   "license": "MIT",
   "author": "Wyatt Johnston <w@wyatt.page",
-  "reposity": "wpj/react-peekaboo",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wpj/react-peekaboo.git"
+  },
+  "bugs": {
+    "url": "https://github.com/wpj/react-peekaboo/issues"
+  },
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
   "types": "dist/index.d.ts",
+  "keywords": [
+    "react",
+    "react-dom",
+    "IntersectionObserver"
+  ],
   "files": [
     "dist"
   ],
