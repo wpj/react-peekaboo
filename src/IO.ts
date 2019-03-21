@@ -1,8 +1,7 @@
 import { createRef, Component } from 'react';
 
-import { Props } from './types';
-
-type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
+import { Omit, Props } from './types';
+import { io, TeardownFunc } from './peekaboo';
 
 export default class IO extends Component<Omit<Props, 'throttle'>> {
   static defaultProps = {
@@ -10,51 +9,27 @@ export default class IO extends Component<Omit<Props, 'throttle'>> {
     offsetTop: 0,
   };
 
-  observer: null | IntersectionObserver = null;
-
   childRef = createRef<Element>();
 
+  teardown?: TeardownFunc;
+
   componentDidMount() {
-    this.createObserver();
-    this.observeRef();
-  }
+    if (this.childRef.current) {
+      const { offsetBottom, offsetTop, onChange } = this.props;
 
-  createObserver() {
-    const { offsetBottom, offsetTop } = this.props;
-    const rootMargin = `${offsetTop}px 0px ${offsetBottom}px 0px`;
-
-    this.observer = new IntersectionObserver(this.updateEntry, {
-      root: null,
-      rootMargin,
-    });
-  }
-
-  handleChange = (isInViewport: boolean) => {
-    this.props.onChange(isInViewport);
-  };
-
-  updateEntry = ([entry]: IntersectionObserverEntry[]) => {
-    this.handleChange(entry.isIntersecting);
-  };
-
-  observeRef() {
-    if (this.childRef.current && this.observer) {
-      this.observer.observe(this.childRef.current);
+      this.teardown = io({
+        element: this.childRef.current,
+        offsetBottom,
+        offsetTop,
+        onChange,
+      });
     }
-  }
-
-  unobserveRef() {
-    if (this.childRef.current && this.observer) {
-      this.observer.unobserve(this.childRef.current);
-    }
-  }
-
-  componentDidUpdate() {
-    this.observeRef();
   }
 
   componentWillUnmount() {
-    this.unobserveRef();
+    if (this.teardown) {
+      this.teardown();
+    }
   }
 
   render() {
