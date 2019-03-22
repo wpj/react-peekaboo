@@ -3,7 +3,7 @@
   "description": "React component that notifies when its child enters or exits the viewport",
   "version": "0.1.3",
   "license": "MIT",
-  "author": "Wyatt Johnston <w@wyatt.page",
+  "author": "Wyatt Johnston <w@wyatt.page>",
   "repository": {
     "type": "git",
     "url": "https://github.com/wpj/react-peekaboo.git"
