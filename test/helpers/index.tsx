@@ -1,55 +1,109 @@
-import * as React from 'react';
+import React, {
+  forwardRef,
+  useEffect,
+  useState,
+  CSSProperties,
+  ComponentProps,
+  ElementType,
+  FunctionComponent,
+} from 'react';
 
-import { IO, Scroll, Props as InViewProps } from '../../src';
+import { Omit, Ref } from '../../src/types';
+import { IO, Scroll } from '../../src';
 
-export const IOBox: React.FunctionComponent<
-  Partial<InViewProps> & {
-    height: string;
-    id: number;
-  }
-> = ({ height, id, ...props }) => {
-  const [isInViewport, setIsInViewport] = React.useState(false);
-  return (
-    <IO {...props} onChange={setIsInViewport}>
-      {ref => (
-        <div
-          data-testid={id}
-          style={{
-            height,
-            backgroundColor: 'goldenrod',
-          }}
-          id={`box-${id}`}
-          ref={ref}
-        >
-          {isInViewport ? 'visible' : 'hidden'}
-        </div>
-      )}
-    </IO>
-  );
+interface TestBoxProps {
+  as?: ElementType;
+  id: number;
+  isInViewport: boolean;
+  style?: CSSProperties;
+  swapAfter?: number;
+  swapTo?: ElementType;
+}
+
+// Renders a styled element that contains information about its current
+// visibility status with the viewport. It can also optionally swap out its
+// underlying dom node after a configurable timeout.
+const TestBox = forwardRef<Ref, TestBoxProps>(
+  (
+    {
+      as: As,
+      id,
+      isInViewport,
+      style: stylesToMerge,
+      swapAfter,
+      swapTo: SwapTo,
+    },
+    ref,
+  ) => {
+    const [swap, setSwap] = useState(false);
+
+    const style = {
+      margin: 0,
+      backgroundColor: 'goldenrod',
+      ...stylesToMerge,
+    };
+
+    useEffect(() => {
+      let timerId: any;
+      if (SwapTo && swapAfter != undefined) {
+        timerId = setTimeout(() => {
+          setSwap(true);
+        }, swapAfter);
+      }
+
+      return () => {
+        clearTimeout(timerId);
+      };
+    }, [SwapTo, swapAfter]);
+
+    const C = (swap ? SwapTo : As) as ElementType;
+
+    return (
+      <C data-testid={id} style={style} id={`box-${id}`} ref={ref}>
+        {isInViewport ? 'visible' : 'hidden'}
+      </C>
+    );
+  },
+);
+
+TestBox.defaultProps = {
+  as: 'div',
+  style: {},
 };
 
-export const ScrollBox: React.FunctionComponent<
-  Partial<InViewProps> & {
-    height: string;
-    id: number;
+export const Box: FunctionComponent<
+  { component: 'io' | 'scroll' } & Partial<
+    Pick<
+      ComponentProps<typeof Scroll>,
+      'offsetBottom' | 'offsetTop' | 'throttle'
+    >
+  > &
+    Omit<TestBoxProps, 'isInViewport'>
+> = ({ component, offsetBottom, offsetTop, throttle, ...props }) => {
+  const [isInViewport, setState] = useState(false);
+
+  const peekabooProps = {
+    offsetBottom,
+    offsetTop,
+    throttle,
+  };
+
+  const testBoxProps = {
+    isInViewport,
+    ...props,
+  };
+
+  if (component === 'scroll') {
+    return (
+      <Scroll throttle={0} {...peekabooProps} onChange={setState}>
+        {ref => <TestBox ref={ref} {...testBoxProps} />}
+      </Scroll>
+    );
   }
-> = ({ height, id, ...props }) => {
-  const [isInViewport, setIsInViewport] = React.useState(false);
+
   return (
-    <Scroll {...props} throttle={0} onChange={setIsInViewport}>
-      {ref => (
-        <div
-          data-testid={id}
-          style={{
-            height,
-            backgroundColor: 'goldenrod',
-          }}
-          id={`box-${id}`}
-          ref={ref}
-        >
-          {isInViewport ? 'visible' : 'hidden'}
-        </div>
-      )}
-    </Scroll>
+    <IO {...peekabooProps} onChange={setState}>
+      {ref => <TestBox ref={ref} {...testBoxProps} />}
+    </IO>
   );
 };

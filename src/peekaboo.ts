@@ -1,6 +1,14 @@
 import throttleFunc from 'lodash.throttle';
 
 let supported: boolean;
+export function intersectionObserverSupported() {
+  if (supported === undefined) {
+    supported =
+      typeof window !== 'undefined' && 'IntersectionObserver' in window;
+  }
+
+  return supported;
+}
 
 export type TeardownFunc = () => void;
 
@@ -14,15 +22,6 @@ export interface IOProps {
 export type ScrollProps = IOProps & {
   throttle: number;
 };
-
-export function intersectionObserverSupported() {
-  if (supported === undefined) {
-    supported =
-      typeof window !== 'undefined' && 'IntersectionObserver' in window;
-  }
-
-  return supported;
-}
 
 export function io({
   element,
@@ -49,11 +48,21 @@ export function io({
   };
 }
 
+function isElementInDocument(element: Element) {
+  return 'isConnected' in element
+    ? element.isConnected
+    : document.body.contains(element);
+}
+
 function isElementInViewport(
   element: Element,
   offsetBottom: number,
   offsetTop: number,
 ): boolean {
+  if (!isElementInDocument(element)) {
+    return false;
+  }
+
   const rect = element.getBoundingClientRect();
 
   // top edge delta from viewport top
@@ -74,6 +83,8 @@ function isElementInViewport(
   return isIntersecting;
 }
 
+// Note: If element is removed from the document, its visibility won't be
+// recalculated until a resize/scroll event is triggered.
 export function scroll({
   element,
   offsetBottom,
