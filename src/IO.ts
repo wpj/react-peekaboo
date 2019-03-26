@@ -1,6 +1,6 @@
 import { Component } from 'react';
 
-import { Omit, Props as SharedProps, Ref } from './types';
+import { defaultProps, Omit, Props as SharedProps, Ref } from './types';
 import { io, TeardownFunc } from './peekaboo';
 
 type IOProps = Omit<SharedProps, 'throttle'>;
@@ -10,10 +10,7 @@ type State = {
 };
 
 export default class IO extends Component<IOProps, State> {
-  static defaultProps = {
-    offsetBottom: 0,
-    offsetTop: 0,
-  };
+  static defaultProps = defaultProps;
 
   state: State = {
     element: null,

@@ -1,6 +1,6 @@
 import { Component } from 'react';
 
-import { Props, Ref } from './types';
+import { defaultProps, Props, Ref } from './types';
 import { scroll, TeardownFunc } from './peekaboo';
 
 type ScrollProps = Props;
@@ -10,11 +10,7 @@ type State = {
 };
 
 export default class Scroll extends Component<ScrollProps, State> {
-  static defaultProps = {
-    offsetBottom: 0,
-    offsetTop: 0,
-    throttle: 100,
-  };
+  static defaultProps = defaultProps;
 
   state: State = {
     element: null,
