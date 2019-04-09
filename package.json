@@ -1,7 +1,7 @@
 {
   "name": "react-peekaboo",
   "description": "React component that notifies when its child enters or exits the viewport",
-  "version": "0.1.5",
+  "version": "0.2.0",
   "license": "MIT",
   "author": "Wyatt Johnston <w@wyatt.page>",
   "repository": {
