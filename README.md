@@ -49,6 +49,12 @@ function Example() {
 Render prop that accepts a ref as its parameter. You must apply the ref to a DOM
 element.
 
+##### `enabled: boolean`
+
+Enables/disables running the viewport-check side effect.
+
+Default: `true`
+
 ##### `offsetBottom?: number`
 
 Number of pixels to add to the bottom of the area checked against when computing
@@ -84,6 +90,12 @@ Default: `100`
 Render prop that accepts a ref as its parameter. You must apply the ref to a DOM
 element.
 
+##### `enabled: boolean`
+
+Enables/disables running the viewport-check side effect.
+
+Default: `true`
+
 ##### `offsetBottom?: number`
 
 Number of pixels to add to the bottom of the area checked against when computing
@@ -109,6 +121,12 @@ viewport.
 
 Render prop that accepts a ref as its parameter. You must apply the ref to a DOM
 element.
+
+##### `enabled: boolean`
+
+Enables/disables running the viewport-check side effect.
+
+Default: `true`
 
 ##### `offsetBottom?: number`
 
