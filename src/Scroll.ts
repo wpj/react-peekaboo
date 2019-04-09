@@ -22,10 +22,10 @@ export default class Scroll extends Component<ScrollProps, State> {
     this.setState({ element });
   };
 
-  teardown?: TeardownFunc;
+  teardown: TeardownFunc | null = null;
 
   setup = () => {
-    if (this.state.element) {
+    if (this.props.enabled && this.state.element) {
       const { offsetBottom, offsetTop, onChange, throttle } = this.props;
 
       this.teardown = scroll({
@@ -41,12 +41,14 @@ export default class Scroll extends Component<ScrollProps, State> {
   safeTeardown = () => {
     if (this.teardown) {
       this.teardown();
+      this.teardown = null;
     }
   };
 
   componentDidUpdate(prevProps: ScrollProps, prevState: State) {
     if (
       prevProps.children !== this.props.children ||
+      prevProps.enabled !== this.props.enabled ||
       prevProps.offsetBottom !== this.props.offsetTop ||
       prevProps.offsetTop !== this.props.offsetTop ||
       prevProps.onChange !== this.props.onChange ||

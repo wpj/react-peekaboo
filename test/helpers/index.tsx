@@ -23,7 +23,7 @@ interface TestBoxProps {
 // Renders a styled element that contains information about its current
 // visibility status with the viewport. It can also optionally swap out its
 // underlying dom node after a configurable timeout.
-const TestBox = forwardRef<Ref, TestBoxProps>(
+export const TestBox = forwardRef<Ref, TestBoxProps>(
   (
     {
       as: As,
@@ -71,18 +71,26 @@ TestBox.defaultProps = {
   style: {},
 };
 
-export const Box: FunctionComponent<
-  { component: 'io' | 'scroll' } & Partial<
-    Pick<
-      ComponentProps<typeof Scroll>,
-      'offsetBottom' | 'offsetTop' | 'throttle'
-    >
-  > &
-    Omit<TestBoxProps, 'isInViewport'>
-> = ({ component, offsetBottom, offsetTop, throttle, ...props }) => {
+export type BoxProps = { component: 'io' | 'scroll' } & Partial<
+  Pick<
+    ComponentProps<typeof Scroll>,
+    'enabled' | 'offsetBottom' | 'offsetTop' | 'throttle'
+  >
+> &
+  Omit<TestBoxProps, 'isInViewport'>;
+
+export const Box: FunctionComponent<BoxProps> = ({
+  component,
+  enabled,
+  offsetBottom,
+  offsetTop,
+  throttle,
+  ...props
+}) => {
   const [isInViewport, setState] = useState(false);
 
   const peekabooProps = {
+    enabled,
     offsetBottom,
     offsetTop,
     throttle,

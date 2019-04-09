@@ -87,3 +87,20 @@ describe(`When a wrapped child's ref changes`, () => {
     });
   });
 });
+
+describe('When disabled', () => {
+  [
+    { label: 'IO', url: `${BASE_URL}/disabled?c=io` },
+    { label: 'Scroll', url: `${BASE_URL}/disabled?c=scroll` },
+  ].forEach(({ label, url }) => {
+    describe(label, () => {
+      beforeEach(async () => {
+        await page.goto(url);
+      });
+
+      test(`doesn't run the visibility-check side effect`, async () => {
+        expect(await getElementViewportStates()).toEqual(['hidden']);
+      });
+    });
+  });
+});
