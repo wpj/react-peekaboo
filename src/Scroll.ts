@@ -49,7 +49,7 @@ export default class Scroll extends Component<ScrollProps, State> {
     if (
       prevProps.children !== this.props.children ||
       prevProps.enabled !== this.props.enabled ||
-      prevProps.offsetBottom !== this.props.offsetTop ||
+      prevProps.offsetBottom !== this.props.offsetBottom ||
       prevProps.offsetTop !== this.props.offsetTop ||
       prevProps.onChange !== this.props.onChange ||
       prevProps.throttle !== this.props.throttle ||
