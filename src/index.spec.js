@@ -8,17 +8,27 @@ function getElementViewportStates() {
   );
 }
 
-// Scroll the page and return a promise that resolves when a scroll event is
-// triggered.
 function scrollWindow(yPixels) {
+  window.scrollTo(0, yPixels);
+  Promise.resolve();
+}
+
+function waitForScrollStop(debounceTime = 0) {
+  const debounce = (callback, wait) => {
+    let timeout;
+    return (...args) => {
+      const next = () => callback(...args);
+      clearTimeout(timeout);
+      timeout = setTimeout(next, wait);
+    };
+  };
+
   return new Promise(resolve => {
-    const handleScroll = () => {
+    const handleScroll = debounce(() => {
       resolve();
       window.removeEventListener('scroll', handleScroll);
-    };
+    }, debounceTime);
     window.addEventListener('scroll', handleScroll);
-
-    window.scrollTo(0, yPixels);
   });
 }
 
@@ -49,21 +59,42 @@ describe('List', () => {
 
       test('recalculates which elements are in the viewport on scroll', async () => {
         const windowHeight = await page.evaluate('window.innerHeight');
-        await page.evaluate(scrollWindow, windowHeight * 2);
+        await Promise.all([
+          page.evaluate(waitForScrollStop),
+          page.evaluate(scrollWindow, windowHeight * 2),
+        ]);
 
-        const result = await getElementViewportStates();
+        expect(await getElementViewportStates()).toEqual([
+          'hidden',
+          'visible',
+          'visible',
+          'visible',
+          'hidden',
+          'hidden',
+          'hidden',
+          'hidden',
+          'hidden',
+          'hidden',
+        ]);
 
-        expect(result).toEqual([
+        await Promise.all([
+          page.evaluate(waitForScrollStop, 100),
+          page.evaluate(() =>
+            document.getElementById('box-9').scrollIntoView(),
+          ),
+        ]);
+
+        expect(await getElementViewportStates()).toEqual([
+          'hidden',
+          'hidden',
+          'hidden',
+          'hidden',
+          'hidden',
+          'hidden',
           'hidden',
           'visible',
           'visible',
           'visible',
-          'hidden',
-          'hidden',
-          'hidden',
-          'hidden',
-          'hidden',
-          'hidden',
         ]);
       });
     });

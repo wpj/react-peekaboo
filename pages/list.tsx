@@ -18,18 +18,12 @@ export default function ListPage({
     <>
       <Box component={component} style={style} id={0} />
       <Box component={component} style={style} id={1} />
-      <Box
-        id={2}
-        component={component}
-        offsetTop={offset}
-        offsetBottom={offset}
-        style={style}
-      />
+      <Box component={component} offsetTop={offset} style={style} id={2} />
       <Box component={component} style={style} id={3} />
       <Box component={component} style={style} id={4} />
       <Box component={component} style={style} id={5} />
       <Box component={component} style={style} id={6} />
-      <Box component={component} style={style} id={7} />
+      <Box component={component} offsetBottom={offset} style={style} id={7} />
       <Box component={component} style={style} id={8} />
       <Box component={component} style={style} id={9} />
     </>

@@ -29,7 +29,11 @@ export function io({
   offsetTop,
   onChange,
 }: IOProps): TeardownFunc {
-  const rootMargin = `${offsetTop}px 0px ${offsetBottom}px 0px`;
+  // rootMargin grows/shrinks the bounding rect of the root element (the
+  // viewport). offsetTop/offsetBottom apply to element, so offsetTop is
+  // remapped to rootMargin bottom and offsetBottom is remapped to rootMargin
+  // top.
+  const rootMargin = `${offsetBottom}px 0px ${offsetTop}px 0px`;
 
   const observer = new IntersectionObserver(
     ([entry]) => {
