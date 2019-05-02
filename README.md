@@ -62,6 +62,20 @@ in view elements.
 
 Default: `0`
 
+##### `offsetLeft?: number`
+
+Number of pixels to add to the left of the area checked against when computing
+in view elements.
+
+Default: `0`
+
+##### `offsetRight?: number`
+
+Number of pixels to add to the right of the area checked against when computing
+in view elements.
+
+Default: `0`
+
 ##### `offsetTop?: number`
 
 Number of pixels to add to the top of the area checked against when computing in
@@ -103,6 +117,20 @@ in view elements.
 
 Default: `0`
 
+##### `offsetLeft?: number`
+
+Number of pixels to add to the left of the area checked against when computing
+in view elements.
+
+Default: `0`
+
+##### `offsetRight?: number`
+
+Number of pixels to add to the right of the area checked against when computing
+in view elements.
+
+Default: `0`
+
 ##### `offsetTop?: number`
 
 Number of pixels to add to the top of the area checked against when computing in
@@ -135,6 +163,20 @@ in view elements.
 
 Default: `0`
 
+##### `offsetLeft?: number`
+
+Number of pixels to add to the left of the area checked against when computing
+in view elements.
+
+Default: `0`
+
+##### `offsetRight?: number`
+
+Number of pixels to add to the right of the area checked against when computing
+in view elements.
+
+Default: `0`
+
 ##### `offsetTop?: number`
 
 Number of pixels to add to the top of the area checked against when computing in
@@ -156,10 +198,10 @@ Default: `100`
 ## Caveats
 
 - This module considers edge-adjacent intersections (when the target element is
-  directly above or below the viewport) to be in viewport. If you only want to
-  consider elements with pixels in the viewport as visible, you can configure
-  `offsetTop`/`offsetBottom` to be `-1`.
+  directly above/below/beside the viewport) to be in viewport. If you only want
+  to consider elements with pixels in the viewport as visible, you can configure
+  `offsetBottom`/`offsetLeft`/`offsetRight`/`offsetTop` to be `-1`.
 - IntersectionObserver ignores `rootMargin` in iframe contexts, which means that
-  `offsetTop` and `offsetBottom` will be ignored.
+  offsets will be ignored.
   - https://w3c.github.io/IntersectionObserver/#dom-intersectionobserver-rootmargin
   - https://developers.google.com/web/updates/2016/04/intersectionobserver#iframe_magic

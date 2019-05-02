@@ -74,7 +74,12 @@ TestBox.defaultProps = {
 export type BoxProps = { component: 'io' | 'scroll' } & Partial<
   Pick<
     ComponentProps<typeof Scroll>,
-    'enabled' | 'offsetBottom' | 'offsetTop' | 'throttle'
+    | 'enabled'
+    | 'offsetBottom'
+    | 'offsetLeft'
+    | 'offsetRight'
+    | 'offsetTop'
+    | 'throttle'
   >
 > &
   Omit<TestBoxProps, 'isInViewport'>;
@@ -83,6 +88,8 @@ export const Box: FunctionComponent<BoxProps> = ({
   component,
   enabled,
   offsetBottom,
+  offsetLeft,
+  offsetRight,
   offsetTop,
   throttle,
   ...props
@@ -92,6 +99,8 @@ export const Box: FunctionComponent<BoxProps> = ({
   const peekabooProps = {
     enabled,
     offsetBottom,
+    offsetLeft,
+    offsetRight,
     offsetTop,
     throttle,
   };
@@ -103,7 +112,7 @@ export const Box: FunctionComponent<BoxProps> = ({
 
   if (component === 'scroll') {
     return (
-      <Scroll throttle={0} {...peekabooProps} onChange={setState}>
+      <Scroll throttle={throttle} {...peekabooProps} onChange={setState}>
         {ref => <TestBox ref={ref} {...testBoxProps} />}
       </Scroll>
     );

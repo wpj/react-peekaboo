@@ -7,6 +7,8 @@ export type Ref = ReactRef<any>;
 export const defaultProps = {
   enabled: true,
   offsetBottom: 0,
+  offsetLeft: 0,
+  offsetRight: 0,
   offsetTop: 0,
   throttle: 100,
 };

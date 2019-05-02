@@ -8,8 +8,8 @@ function getElementViewportStates() {
   );
 }
 
-function scrollWindow(yPixels) {
-  window.scrollTo(0, yPixels);
+function scrollWindow({ x = 0, y = 0 }) {
+  window.scrollTo(x, y);
   Promise.resolve();
 }
 
@@ -34,12 +34,14 @@ function waitForScrollStop(debounceTime = 0) {
 
 describe('List', () => {
   [
-    { label: 'IO', url: `${BASE_URL}/list?c=io` },
-    { label: 'Scroll', url: `${BASE_URL}/list?c=scroll` },
-  ].forEach(({ label, url }) => {
-    describe(label, () => {
+    { component: 'io', direction: 'vertical', url: `${BASE_URL}/list` },
+    { component: 'io', direction: 'horizontal', url: `${BASE_URL}/list` },
+    { component: 'scroll', direction: 'vertical', url: `${BASE_URL}/list` },
+    { component: 'scroll', direction: 'horizontal', url: `${BASE_URL}/list` },
+  ].forEach(({ component, direction, url }) => {
+    describe(`${component} - ${direction}`, () => {
       beforeEach(async () => {
-        await page.goto(url);
+        await page.goto(`${url}?c=${component}&direction=${direction}`);
       });
 
       test('calculates which elements are in the viewport', async () => {
@@ -58,10 +60,16 @@ describe('List', () => {
       });
 
       test('recalculates which elements are in the viewport on scroll', async () => {
-        const windowHeight = await page.evaluate('window.innerHeight');
+        const viewportHeight = await page.evaluate('window.innerHeight');
+        const viewportWidth = await page.evaluate('window.innerWidth');
         await Promise.all([
           page.evaluate(waitForScrollStop),
-          page.evaluate(scrollWindow, windowHeight * 2),
+          page.evaluate(
+            scrollWindow,
+            direction === 'vertical'
+              ? { y: viewportHeight * 2 }
+              : { x: viewportWidth * 2 },
+          ),
         ]);
 
         expect(await getElementViewportStates()).toEqual([
@@ -109,7 +117,7 @@ describe(`When a wrapped child's ref changes`, () => {
     describe(label, () => {
       beforeEach(async () => {
         await page.goto(url);
-        await page.evaluate(scrollWindow, 1);
+        await page.evaluate(scrollWindow, { y: 1 });
       });
 
       test('calculates which elements are in the viewport', async () => {

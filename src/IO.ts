@@ -26,11 +26,19 @@ export default class IO extends Component<IOProps, State> {
 
   setup = () => {
     if (this.props.enabled && this.state.element) {
-      const { offsetBottom, offsetTop, onChange } = this.props;
+      const {
+        offsetBottom,
+        offsetLeft,
+        offsetRight,
+        offsetTop,
+        onChange,
+      } = this.props;
 
       this.teardown = io({
         element: this.state.element,
         offsetBottom,
+        offsetLeft,
+        offsetRight,
         offsetTop,
         onChange,
       });
@@ -49,6 +57,8 @@ export default class IO extends Component<IOProps, State> {
       prevProps.children !== this.props.children ||
       prevProps.enabled !== this.props.enabled ||
       prevProps.offsetBottom !== this.props.offsetBottom ||
+      prevProps.offsetLeft !== this.props.offsetLeft ||
+      prevProps.offsetRight !== this.props.offsetRight ||
       prevProps.offsetTop !== this.props.offsetTop ||
       prevProps.onChange !== this.props.onChange ||
       prevState.element !== this.state.element

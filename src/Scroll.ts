@@ -26,10 +26,19 @@ export default class Scroll extends Component<ScrollProps, State> {
 
   setup = () => {
     if (this.props.enabled && this.state.element) {
-      const { offsetBottom, offsetTop, onChange, throttle } = this.props;
+      const {
+        offsetBottom,
+        offsetLeft,
+        offsetRight,
+        offsetTop,
+        onChange,
+        throttle,
+      } = this.props;
 
       this.teardown = scroll({
         offsetBottom,
+        offsetLeft,
+        offsetRight,
         offsetTop,
         onChange,
         element: this.state.element,
@@ -50,6 +59,8 @@ export default class Scroll extends Component<ScrollProps, State> {
       prevProps.children !== this.props.children ||
       prevProps.enabled !== this.props.enabled ||
       prevProps.offsetBottom !== this.props.offsetBottom ||
+      prevProps.offsetLeft !== this.props.offsetLeft ||
+      prevProps.offsetRight !== this.props.offsetRight ||
       prevProps.offsetTop !== this.props.offsetTop ||
       prevProps.onChange !== this.props.onChange ||
       prevProps.throttle !== this.props.throttle ||

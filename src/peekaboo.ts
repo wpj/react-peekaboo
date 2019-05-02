@@ -15,6 +15,8 @@ export type TeardownFunc = () => void;
 export interface IOProps {
   element: Element;
   offsetBottom: number;
+  offsetLeft: number;
+  offsetRight: number;
   offsetTop: number;
   onChange: (isInviewPort: boolean) => void;
 }
@@ -26,14 +28,22 @@ export type ScrollProps = IOProps & {
 export function io({
   element,
   offsetBottom,
+  offsetLeft,
+  offsetRight,
   offsetTop,
   onChange,
 }: IOProps): TeardownFunc {
-  // rootMargin grows/shrinks the bounding rect of the root element (the
-  // viewport). offsetTop/offsetBottom apply to element, so offsetTop is
-  // remapped to rootMargin bottom and offsetBottom is remapped to rootMargin
-  // top.
-  const rootMargin = `${offsetBottom}px 0px ${offsetTop}px 0px`;
+  /*
+   * rootMargin grows/shrinks the bounding rect of the root element (the
+   * viewport), while offsets apply to the element, so offsets are mapped to
+   * rootMargin values as follows:
+   *
+   * offsetBottom: rootMargin top
+   * offsetLeft: rootMargin right
+   * offsetRight: rootMargin left
+   * offsetTop: rootMargin bottom
+   */
+  const rootMargin = `${offsetBottom}px ${offsetLeft}px ${offsetTop}px ${offsetRight}px`;
 
   const observer = new IntersectionObserver(
     ([entry]) => {
@@ -58,10 +68,14 @@ function isElementInDocument(element: Element) {
     : document.body.contains(element);
 }
 
-function isElementInViewport(
+function isElementIntersecting(
   element: Element,
-  offsetBottom: number,
-  offsetTop: number,
+  {
+    offsetBottom,
+    offsetLeft,
+    offsetRight,
+    offsetTop,
+  }: Pick<IOProps, 'offsetBottom' | 'offsetLeft' | 'offsetRight' | 'offsetTop'>,
 ): boolean {
   if (!isElementInDocument(element)) {
     return false;
@@ -69,22 +83,28 @@ function isElementInViewport(
 
   const rect = element.getBoundingClientRect();
 
-  // top edge delta from viewport top
-  const top = rect.top;
+  // bottom edge delta from viewport top ajusted with offset
+  const adjustedBottom = rect.bottom + offsetBottom;
 
-  // bottom edge delta from viewport top
-  const bottom = rect.bottom;
+  // left edge delta from viewport left ajusted with offset
+  const adjustedLeft = rect.left - offsetLeft;
 
-  const adjustedTop = top - offsetTop;
-  const adjustedBottom = bottom + offsetBottom;
+  // right edge delta from viewport left ajusted with offset
+  const adjustedRight = rect.right + offsetRight;
 
-  const isTopEdgeAboveViewportBottom = adjustedTop <= window.innerHeight;
-  const isBottomEdgeBelowViewportTop = adjustedBottom >= 0;
+  // top edge delta from viewport top ajusted with offset
+  const adjustedTop = rect.top - offsetTop;
 
-  const isIntersecting =
-    isTopEdgeAboveViewportBottom && isBottomEdgeBelowViewportTop;
-
-  return isIntersecting;
+  return (
+    // bottom edge is below (or intersecting with) viewport top
+    adjustedBottom >= 0 &&
+    // left edge is left of (or intersecting with) viewport right
+    adjustedLeft <= window.innerWidth &&
+    // right edge is right of (or intersecting with) viewport left
+    adjustedRight >= 0 &&
+    // top edge is above (or intersecting iwth) viewport bottom
+    adjustedTop <= window.innerHeight
+  );
 }
 
 // Note: If element is removed from the document, its visibility won't be
@@ -92,6 +112,8 @@ function isElementInViewport(
 export function scroll({
   element,
   offsetBottom,
+  offsetLeft,
+  offsetRight,
   offsetTop,
   onChange,
   throttle,
@@ -100,7 +122,12 @@ export function scroll({
 
   const checkViewport = () => {
     const isInViewport = element
-      ? isElementInViewport(element, offsetBottom, offsetTop)
+      ? isElementIntersecting(element, {
+          offsetBottom,
+          offsetLeft,
+          offsetRight,
+          offsetTop,
+        })
       : false;
 
     if (isInViewport !== prevInViewport) {
