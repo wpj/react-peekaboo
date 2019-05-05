@@ -1,7 +1,7 @@
 import throttleFunc from 'lodash.throttle';
 
 let supported: boolean;
-export function intersectionObserverSupported() {
+function intersectionObserverSupported() {
   if (supported === undefined) {
     supported =
       typeof window !== 'undefined' && 'IntersectionObserver' in window;
@@ -12,27 +12,28 @@ export function intersectionObserverSupported() {
 
 export type TeardownFunc = () => void;
 
-export interface IOProps {
+export type IntersectionChangeCallback = (change: boolean) => void;
+
+export interface Props {
   element: Element;
-  offsetBottom: number;
-  offsetLeft: number;
-  offsetRight: number;
-  offsetTop: number;
-  onChange: (isInviewPort: boolean) => void;
+  offsetBottom?: number;
+  offsetLeft?: number;
+  offsetRight?: number;
+  offsetTop?: number;
+  onChange: IntersectionChangeCallback;
+  throttle?: number;
 }
 
-export type ScrollProps = IOProps & {
-  throttle: number;
-};
+export type Effect = (props: Props) => TeardownFunc;
 
 export function io({
   element,
-  offsetBottom,
-  offsetLeft,
-  offsetRight,
-  offsetTop,
+  offsetBottom = 0,
+  offsetLeft = 0,
+  offsetRight = 0,
+  offsetTop = 0,
   onChange,
-}: IOProps): TeardownFunc {
+}: Props): TeardownFunc {
   /*
    * rootMargin grows/shrinks the bounding rect of the root element (the
    * viewport), while offsets apply to the element, so offsets are mapped to
@@ -75,7 +76,12 @@ function isElementIntersecting(
     offsetLeft,
     offsetRight,
     offsetTop,
-  }: Pick<IOProps, 'offsetBottom' | 'offsetLeft' | 'offsetRight' | 'offsetTop'>,
+  }: {
+    offsetBottom: number;
+    offsetLeft: number;
+    offsetRight: number;
+    offsetTop: number;
+  },
 ): boolean {
   if (!isElementInDocument(element)) {
     return false;
@@ -111,13 +117,13 @@ function isElementIntersecting(
 // recalculated until a resize/scroll event is triggered.
 export function scroll({
   element,
-  offsetBottom,
-  offsetLeft,
-  offsetRight,
-  offsetTop,
+  offsetBottom = 0,
+  offsetLeft = 0,
+  offsetRight = 0,
+  offsetTop = 0,
   onChange,
-  throttle,
-}: ScrollProps): TeardownFunc {
+  throttle = 100,
+}: Props): TeardownFunc {
   let prevInViewport: boolean;
 
   const checkViewport = () => {
@@ -146,4 +152,8 @@ export function scroll({
     window.removeEventListener('scroll', eventHandler);
     window.removeEventListener('resize', eventHandler);
   };
+}
+
+export function intersection(props: Props) {
+  return intersectionObserverSupported() ? io(props) : scroll(props);
 }

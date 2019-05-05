@@ -2,10 +2,7 @@
 
 [![Build Status](https://cloud.drone.io/api/badges/wpj/react-peekaboo/status.svg)](https://cloud.drone.io/wpj/react-peekaboo)
 
-React component that notifies you when its child enters or exits the viewport.
-Under the hood, it uses the `IntersectionObserver` API in supported environments
-and falls back to listening for `scroll` and `resize` events in combination with
-`getBoundingClientRect` in unsupported environments.
+React hooks for tracking an element's intersection with the viewport.
 
 ## Installation
 
@@ -22,178 +19,91 @@ npm install --save react-peekaboo
 ## Usage
 
 ```jsx
-import React, { useState } from 'react';
-import { InView } from 'react-peekaboo';
+import React, { useRef, useState } from 'react';
+import { useIntersection, useIntersectionChangeCallback } from 'react-peekaboo';
 
 function Example() {
-  const [isInViewport, setIsInViewport] = useState(false);
+  const ref = useRef();
+  const isIntersecting = useIntersection({ element: ref.current });
 
   return (
-    <InView onChange={setIsInViewport}>
-      {ref => (
-        <div ref={ref}>I am {isInViewport ? 'visible' : 'not visible'}.</div>
-      )}
-    </InView>
+    <div ref={ref}>I am {isIntersecting ? 'visible' : 'not visible'}.</div>
+  );
+}
+
+function CallbackExample() {
+  const ref = useRef();
+  const [isIntersecting, onChange] = useState(false);
+
+  useIntersectionChangeCallback(onChange, { element: ref.current });
+
+  return (
+    <div ref={ref}>I am {isIntersecting ? 'visible' : 'not visible'}.</div>
   );
 }
 ```
 
 ## API
 
-### `InView`
+### Props
 
-#### Props
+All functions accept a props object with a common structure:
 
-##### `children: (ref: React.Ref<any>) => JSX.Element`
+- `element?: Element | undefined | null`: the DOM element to calculate
+  intersection on.
 
-Render prop that accepts a ref as its parameter. You must apply the ref to a DOM
-element.
+- `enabled?: boolean`: Enables/disables running the side effect that calculates
+  the element's intersection status. (default: `true`)
 
-##### `enabled: boolean`
+- `offsetBottom?: number`: Number of pixels to add to the bottom of the area
+  checked against when computing element intersection. (default: `0`)
 
-Enables/disables running the viewport-check side effect.
+- `offsetLeft?: number`: Number of pixels to add to the left of the area checked
+  against when computing element intersection. (default: `0`)
 
-Default: `true`
+- `offsetRight?: number`: Number of pixels to add to the right of the area
+  checked against when computing element intersection. (default: `0`)
 
-##### `offsetBottom?: number`
+- `offsetTop?: number`: Number of pixels to add to the top of the area checked
+  against when computing element intersection. (default: `0`)
 
-Number of pixels to add to the bottom of the area checked against when computing
-in view elements.
+- `throttle?: number`: Number of ms to throttle scroll events (only applies in
+  environments that don't support IntersectionObserver or when using
+  `useScrollIntersection`/`useScrollIntersectionChangeCallback`). (default:
+  `100`)
 
-Default: `0`
+### Exports
 
-##### `offsetLeft?: number`
+#### `useIntersection: (props: Props) => boolean`
 
-Number of pixels to add to the left of the area checked against when computing
-in view elements.
+Returns the element's intersection status using IntersectionObserver or
+`scroll`/`resize` event listeners and `getBoundingClientRect` in unsupported
+environments.
 
-Default: `0`
+#### `useIntersectionChangeCallback: (onChange: (change: boolean) => void, props: Props) => void`
 
-##### `offsetRight?: number`
+Runs a callback that receives the element's intersection status each time it
+changes using IntersectionObserver or `scroll`/`resize` event listeners and
+`getBoundingClientRect` in unsupported environments.
 
-Number of pixels to add to the right of the area checked against when computing
-in view elements.
+#### `useIntersectionObserverIntersection: (props: Props) => boolean`
 
-Default: `0`
+Returns the element's intersection status using IntersectionObserver.
 
-##### `offsetTop?: number`
+#### `useIntersectionObserverIntersectionChangeCallback: (onChange: (change: boolean) => void, props: Props) => void`
 
-Number of pixels to add to the top of the area checked against when computing in
-view elements.
+Runs a callback that receives the element's intersection status each time it
+changes using IntersectionObserver.
 
-Default: `0`
+#### `useScrollIntersection: (props: Props) => boolean`
 
-##### `onChange: (isInviewPort: boolean) => void`
+Returns the element's intersection status using `scroll`/`resize` event
+listeners and `getBoundingClientRect`.
 
-Callback that's invoked each time the wrapped element enters or exits the
-viewport.
+#### `useScrollIntersectionChangeCallback: (onChange: (change: boolean) => void, props: Props) => void`
 
-##### `throttle?: number`
-
-Number of ms to throttle scroll events (only applies in environments that don't
-support IntersectionObserver).
-
-Default: `100`
-
-### `IO`
-
-#### Props
-
-##### `children: (ref: React.Ref<any>) => JSX.Element`
-
-Render prop that accepts a ref as its parameter. You must apply the ref to a DOM
-element.
-
-##### `enabled: boolean`
-
-Enables/disables running the viewport-check side effect.
-
-Default: `true`
-
-##### `offsetBottom?: number`
-
-Number of pixels to add to the bottom of the area checked against when computing
-in view elements.
-
-Default: `0`
-
-##### `offsetLeft?: number`
-
-Number of pixels to add to the left of the area checked against when computing
-in view elements.
-
-Default: `0`
-
-##### `offsetRight?: number`
-
-Number of pixels to add to the right of the area checked against when computing
-in view elements.
-
-Default: `0`
-
-##### `offsetTop?: number`
-
-Number of pixels to add to the top of the area checked against when computing in
-view elements.
-
-Default: `0`
-
-##### `onChange: (isInviewPort: boolean) => void`
-
-Callback that's invoked each time the wrapped element enters or exits the
-viewport.
-
-### `Scroll`
-
-##### `children: (ref: React.Ref<any>) => JSX.Element`
-
-Render prop that accepts a ref as its parameter. You must apply the ref to a DOM
-element.
-
-##### `enabled: boolean`
-
-Enables/disables running the viewport-check side effect.
-
-Default: `true`
-
-##### `offsetBottom?: number`
-
-Number of pixels to add to the bottom of the area checked against when computing
-in view elements.
-
-Default: `0`
-
-##### `offsetLeft?: number`
-
-Number of pixels to add to the left of the area checked against when computing
-in view elements.
-
-Default: `0`
-
-##### `offsetRight?: number`
-
-Number of pixels to add to the right of the area checked against when computing
-in view elements.
-
-Default: `0`
-
-##### `offsetTop?: number`
-
-Number of pixels to add to the top of the area checked against when computing in
-view elements.
-
-Default: `0`
-
-##### `onChange: (isInviewPort: boolean) => void`
-
-Callback that's invoked each time the wrapped element enters or exits the
-viewport.
-
-##### `throttle?: number`
-
-Number of ms to throttle scroll events.
-
-Default: `100`
+Runs a callback that receives the element's intersection status each time it
+changes using `scroll`/`resize` event listeners and `getBoundingClientRect`.
 
 ## Caveats
 

@@ -40,8 +40,8 @@
     "prebuild": "rimraf compiled dist",
     "prepublishOnly": "npm run test && npm run build",
     "test": "npm run test:e2e",
-    "test:e2e": "start-server-and-test dev \"http://localhost:3000/list|http://localhost:3000/ref-swap\" test:jest:e2e",
-    "test:e2e:ci": "start-server-and-test dev \"http://localhost:3000/list|http://localhost:3000/ref-swap\" test:jest:e2e:ci",
+    "test:e2e": "start-server-and-test dev \"http://localhost:3000/list|http://localhost:3000/disabled\" test:jest:e2e",
+    "test:e2e:ci": "start-server-and-test dev \"http://localhost:3000/list|http://localhost:3000/disabled\" test:jest:e2e:ci",
     "test:jest:e2e": "jest -c jest.config.e2e.js",
     "test:jest:e2e:ci": "cross-env CI=true jest -c jest.config.e2e.js --runInBand",
     "typecheck": "tsc"
@@ -82,6 +82,6 @@
     "lodash.throttle": "^4.1.1"
   },
   "peerDependencies": {
-    "react": ">=16"
+    "react": ">=16.8.0"
   }
 }

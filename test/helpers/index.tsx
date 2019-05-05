@@ -1,126 +1,70 @@
-import React, {
-  forwardRef,
-  useEffect,
-  useState,
-  CSSProperties,
-  ComponentProps,
-  ElementType,
-  FunctionComponent,
-} from 'react';
+/* @jsx createElement */
 
-import { Omit, Ref } from '../../src/types';
-import { IO, Scroll } from '../../src';
+import { createElement, useRef, CSSProperties, FunctionComponent } from 'react';
 
-interface TestBoxProps {
-  as?: ElementType;
+import {
+  useIntersectionObserverIntersection,
+  useScrollIntersection,
+  Props,
+} from '../../src/hooks';
+
+export type BoxProps = {
+  component: 'io' | 'scroll';
   id: number;
-  isInViewport: boolean;
   style?: CSSProperties;
-  swapAfter?: number;
-  swapTo?: ElementType;
+} & Pick<
+  Props,
+  | 'enabled'
+  | 'offsetBottom'
+  | 'offsetLeft'
+  | 'offsetRight'
+  | 'offsetTop'
+  | 'throttle'
+>;
+
+function useIntersection(scroll, props) {
+  return scroll
+    ? useScrollIntersection(props)
+    : useIntersectionObserverIntersection(props);
 }
-
-// Renders a styled element that contains information about its current
-// visibility status with the viewport. It can also optionally swap out its
-// underlying dom node after a configurable timeout.
-export const TestBox = forwardRef<Ref, TestBoxProps>(
-  (
-    {
-      as: As,
-      id,
-      isInViewport,
-      style: stylesToMerge,
-      swapAfter,
-      swapTo: SwapTo,
-    },
-    ref,
-  ) => {
-    const [swap, setSwap] = useState(false);
-
-    const style = {
-      margin: 0,
-      backgroundColor: 'goldenrod',
-      ...stylesToMerge,
-    };
-
-    useEffect(() => {
-      let timerId: any;
-      if (SwapTo && swapAfter != undefined) {
-        timerId = setTimeout(() => {
-          setSwap(true);
-        }, swapAfter);
-      }
-
-      return () => {
-        clearTimeout(timerId);
-      };
-    }, [SwapTo, swapAfter]);
-
-    const C = (swap ? SwapTo : As) as ElementType;
-
-    return (
-      <C data-testid={id} style={style} id={`box-${id}`} ref={ref}>
-        {isInViewport ? 'visible' : 'hidden'}
-      </C>
-    );
-  },
-);
-
-TestBox.defaultProps = {
-  as: 'div',
-  style: {},
-};
-
-export type BoxProps = { component: 'io' | 'scroll' } & Partial<
-  Pick<
-    ComponentProps<typeof Scroll>,
-    | 'enabled'
-    | 'offsetBottom'
-    | 'offsetLeft'
-    | 'offsetRight'
-    | 'offsetTop'
-    | 'throttle'
-  >
-> &
-  Omit<TestBoxProps, 'isInViewport'>;
 
 export const Box: FunctionComponent<BoxProps> = ({
   component,
   enabled,
+  id,
   offsetBottom,
   offsetLeft,
   offsetRight,
   offsetTop,
+  style: stylesToMerge,
   throttle,
-  ...props
 }) => {
-  const [isInViewport, setState] = useState(false);
+  const ref = useRef();
+  const element = ref.current;
 
-  const peekabooProps = {
+  const isIntersecting = useIntersection(component === 'scroll', {
+    element,
     enabled,
     offsetBottom,
     offsetLeft,
     offsetRight,
     offsetTop,
     throttle,
-  };
+  });
 
-  const testBoxProps = {
-    isInViewport,
-    ...props,
+  const style = {
+    margin: 0,
+    backgroundColor: 'goldenrod',
+    ...stylesToMerge,
   };
-
-  if (component === 'scroll') {
-    return (
-      <Scroll throttle={throttle} {...peekabooProps} onChange={setState}>
-        {ref => <TestBox ref={ref} {...testBoxProps} />}
-      </Scroll>
-    );
-  }
 
   return (
-    <IO {...peekabooProps} onChange={setState}>
-      {ref => <TestBox ref={ref} {...testBoxProps} />}
-    </IO>
+    <div data-testid={id} style={style} id={`box-${id}`} ref={ref}>
+      {isIntersecting ? 'visible' : 'hidden'}
+    </div>
   );
+};
+
+Box.defaultProps = {
+  style: {},
 };

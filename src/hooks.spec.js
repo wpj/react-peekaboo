@@ -2,7 +2,7 @@
 
 const BASE_URL = 'http://localhost:3000';
 
-function getElementViewportStates() {
+function getElementIntersectionStates() {
   return page.$$eval('[data-testid]', elements =>
     elements.map(el => el.innerHTML),
   );
@@ -11,6 +11,12 @@ function getElementViewportStates() {
 function scrollWindow({ x = 0, y = 0 }) {
   window.scrollTo(x, y);
   Promise.resolve();
+}
+
+function waitForIdleCallback() {
+  return new Promise(resolve => {
+    requestIdleCallback(resolve);
+  });
 }
 
 function waitForScrollStop(debounceTime = 0) {
@@ -44,8 +50,9 @@ describe('List', () => {
         await page.goto(`${url}?c=${component}&direction=${direction}`);
       });
 
-      test('calculates which elements are in the viewport', async () => {
-        expect(await getElementViewportStates()).toEqual([
+      test('calculates which elements are intersecting', async () => {
+        await page.evaluate(waitForIdleCallback);
+        expect(await getElementIntersectionStates()).toEqual([
           'visible',
           'visible',
           'visible',
@@ -59,7 +66,7 @@ describe('List', () => {
         ]);
       });
 
-      test('recalculates which elements are in the viewport on scroll', async () => {
+      test('recalculates which elements are intersecting on scroll', async () => {
         const viewportHeight = await page.evaluate('window.innerHeight');
         const viewportWidth = await page.evaluate('window.innerWidth');
         await Promise.all([
@@ -72,7 +79,8 @@ describe('List', () => {
           ),
         ]);
 
-        expect(await getElementViewportStates()).toEqual([
+        await page.evaluate(waitForIdleCallback);
+        expect(await getElementIntersectionStates()).toEqual([
           'hidden',
           'visible',
           'visible',
@@ -92,7 +100,8 @@ describe('List', () => {
           ),
         ]);
 
-        expect(await getElementViewportStates()).toEqual([
+        await page.evaluate(waitForIdleCallback);
+        expect(await getElementIntersectionStates()).toEqual([
           'hidden',
           'hidden',
           'hidden',
@@ -109,24 +118,6 @@ describe('List', () => {
   });
 });
 
-describe(`When a wrapped child's ref changes`, () => {
-  [
-    { label: 'IO', url: `${BASE_URL}/ref-swap?c=io` },
-    { label: 'Scroll', url: `${BASE_URL}/ref-swap?c=scroll` },
-  ].forEach(({ label, url }) => {
-    describe(label, () => {
-      beforeEach(async () => {
-        await page.goto(url);
-        await page.evaluate(scrollWindow, { y: 1 });
-      });
-
-      test('calculates which elements are in the viewport', async () => {
-        expect(await getElementViewportStates()).toEqual(['visible']);
-      });
-    });
-  });
-});
-
 describe('When disabled', () => {
   [
     { label: 'IO', url: `${BASE_URL}/disabled?c=io` },
@@ -138,7 +129,8 @@ describe('When disabled', () => {
       });
 
       test(`doesn't run the visibility-check side effect`, async () => {
-        expect(await getElementViewportStates()).toEqual(['hidden']);
+        await page.evaluate(waitForIdleCallback);
+        expect(await getElementIntersectionStates()).toEqual(['hidden']);
       });
     });
   });
