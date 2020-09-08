@@ -19,23 +19,20 @@ npm install --save react-peekaboo
 ## Usage
 
 ```jsx
-import React, { useRef, useState } from 'react';
-import { useIntersection, useIntersectionChangeCallback } from 'react-peekaboo';
+import React, { useState } from 'react';
+import { useIntersecting, useIntersectionChange } from 'react-peekaboo';
 
-function Example() {
-  const ref = useRef();
-  const isIntersecting = useIntersection({ element: ref.current });
+function IntersectionExample() {
+  const [ref, isIntersecting] = useIntersecting();
 
   return (
     <div ref={ref}>I am {isIntersecting ? 'visible' : 'not visible'}.</div>
   );
 }
 
-function CallbackExample() {
-  const ref = useRef();
+function IntersectionChangeExample() {
   const [isIntersecting, onChange] = useState(false);
-
-  useIntersectionChangeCallback(onChange, { element: ref.current });
+  const ref = useIntersectionChange(onChange);
 
   return (
     <div ref={ref}>I am {isIntersecting ? 'visible' : 'not visible'}.</div>
@@ -45,12 +42,9 @@ function CallbackExample() {
 
 ## API
 
-### Props
+### Options
 
-All functions accept a props object with a common structure:
-
-- `element?: Element | undefined | null`: the DOM element to calculate
-  intersection on.
+All functions accept a common set of options:
 
 - `enabled?: boolean`: Enables/disables running the side effect that calculates
   the element's intersection status. (default: `true`)
@@ -74,36 +68,17 @@ All functions accept a props object with a common structure:
 
 ### Exports
 
-#### `useIntersection: (props: Props) => boolean`
+#### `useIntersecting: (options: Options) => boolean`
 
 Returns the element's intersection status using IntersectionObserver or
 `scroll`/`resize` event listeners and `getBoundingClientRect` in unsupported
 environments.
 
-#### `useIntersectionChangeCallback: (onChange: (change: boolean) => void, props: Props) => void`
+#### `useIntersectionChange: (onChange: (change: boolean) => void, options: Options) => void`
 
 Runs a callback that receives the element's intersection status each time it
 changes using IntersectionObserver or `scroll`/`resize` event listeners and
 `getBoundingClientRect` in unsupported environments.
-
-#### `useIntersectionObserverIntersection: (props: Props) => boolean`
-
-Returns the element's intersection status using IntersectionObserver.
-
-#### `useIntersectionObserverIntersectionChangeCallback: (onChange: (change: boolean) => void, props: Props) => void`
-
-Runs a callback that receives the element's intersection status each time it
-changes using IntersectionObserver.
-
-#### `useScrollIntersection: (props: Props) => boolean`
-
-Returns the element's intersection status using `scroll`/`resize` event
-listeners and `getBoundingClientRect`.
-
-#### `useScrollIntersectionChangeCallback: (onChange: (change: boolean) => void, props: Props) => void`
-
-Runs a callback that receives the element's intersection status each time it
-changes using `scroll`/`resize` event listeners and `getBoundingClientRect`.
 
 ## Caveats
 

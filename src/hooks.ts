@@ -1,86 +1,44 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, RefCallback } from 'react';
 
 import {
-  io,
-  scroll,
   intersection,
-  IntersectionChangeCallback,
-  Effect,
-  Props as PeekabooProps,
+  ChangeHandler,
+  Options as PeekabooOptions,
+  SetupHandler,
 } from './peekaboo';
-import { Omit } from './type-utils';
 
-export type Props = Omit<PeekabooProps, 'onChange'> & {
-  element?: Element | undefined | null;
+export type Options = PeekabooOptions & {
   enabled?: boolean;
 };
 
-function useIntersectionEffect(
-  effect: Effect,
-  onChange: IntersectionChangeCallback,
-  { element, enabled = true, ...props }: Props,
-) {
+export function usePeekaboo(
+  setup: SetupHandler,
+  onChange: ChangeHandler,
+  options: Options,
+): RefCallback<HTMLElement> {
+  let [element, ref] = useState<HTMLElement | null>(null);
+
   useEffect(() => {
-    if (!element || !enabled) {
-      return;
+    if (!element || options.enabled === false) {
+      return undefined;
     }
 
-    return effect({ ...props, element, onChange });
-  }, [
-    element,
-    enabled,
-    props.offsetBottom,
-    props.offsetLeft,
-    props.offsetRight,
-    props.offsetTop,
-    onChange,
-    props.throttle,
-  ]);
+    return setup(element, onChange, options);
+  }, [element, onChange, options]);
+
+  return ref;
 }
 
-export function useScrollIntersectionChangeCallback(
-  onChange: IntersectionChangeCallback,
-  props: Props,
+export function useIntersectionChange(
+  onChange: ChangeHandler,
+  options: Options,
 ) {
-  useIntersectionEffect(scroll, onChange, props);
+  return usePeekaboo(intersection, onChange, options);
 }
 
-export function useIntersectionObserverIntersectionChangeCallback(
-  onChange: IntersectionChangeCallback,
-  props: Props,
-) {
-  useIntersectionEffect(io, onChange, props);
-}
+export function useIntersecting(options: Options) {
+  let [intersecting, setIntersecting] = useState<boolean>(false);
 
-export function useIntersectionChangeCallback(
-  onChange: IntersectionChangeCallback,
-  props: Props,
-) {
-  useIntersectionEffect(intersection, onChange, props);
-}
-
-function useIsIntersecting(
-  useIntersectionChangeCallbackHook: typeof useIntersectionChangeCallback,
-  props: Props,
-) {
-  const [isIntersecting, onChange] = useState(false);
-
-  useIntersectionChangeCallbackHook(onChange, props);
-
-  return isIntersecting;
-}
-
-export function useScrollIntersection(props: Props) {
-  return useIsIntersecting(useScrollIntersectionChangeCallback, props);
-}
-
-export function useIntersectionObserverIntersection(props: Props) {
-  return useIsIntersecting(
-    useIntersectionObserverIntersectionChangeCallback,
-    props,
-  );
-}
-
-export function useIntersection(props: Props) {
-  return useIsIntersecting(useIntersectionChangeCallback, props);
+  let ref = usePeekaboo(intersection, setIntersecting, options);
+  return [ref, intersecting];
 }

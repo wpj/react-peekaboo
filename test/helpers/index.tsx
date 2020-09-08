@@ -1,12 +1,14 @@
 /* @jsx createElement */
 
-import { createElement, useRef, CSSProperties, FunctionComponent } from 'react';
-
 import {
-  useIntersectionObserverIntersection,
-  useScrollIntersection,
-  Props,
-} from '../../src/hooks';
+  createElement,
+  useState,
+  CSSProperties,
+  FunctionComponent,
+} from 'react';
+
+import { usePeekaboo, Props } from '../../src/hooks';
+import { scroll, io } from '../../src/peekaboo';
 
 export type BoxProps = {
   component: 'io' | 'scroll';
@@ -22,12 +24,6 @@ export type BoxProps = {
   | 'throttle'
 >;
 
-function useIntersection(scroll, props) {
-  return scroll
-    ? useScrollIntersection(props)
-    : useIntersectionObserverIntersection(props);
-}
-
 export const Box: FunctionComponent<BoxProps> = ({
   component,
   enabled,
@@ -39,18 +35,20 @@ export const Box: FunctionComponent<BoxProps> = ({
   style: stylesToMerge,
   throttle,
 }) => {
-  const ref = useRef();
-  const element = ref.current;
+  const [isIntersecting, setIsIntersecting] = useState<boolean>(false);
 
-  const isIntersecting = useIntersection(component === 'scroll', {
-    element,
-    enabled,
-    offsetBottom,
-    offsetLeft,
-    offsetRight,
-    offsetTop,
-    throttle,
-  });
+  const ref = usePeekaboo(
+    component === 'scroll' ? scroll : io,
+    setIsIntersecting,
+    {
+      enabled,
+      offsetBottom,
+      offsetLeft,
+      offsetRight,
+      offsetTop,
+      throttle,
+    },
+  );
 
   const style = {
     margin: 0,

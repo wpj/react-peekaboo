@@ -1,7 +1,7 @@
 import throttleFunc from 'lodash.throttle';
 
 let supported: boolean;
-function intersectionObserverSupported() {
+export function intersectionObserverSupported() {
   if (supported === undefined) {
     supported =
       typeof window !== 'undefined' && 'IntersectionObserver' in window;
@@ -10,30 +10,29 @@ function intersectionObserverSupported() {
   return supported;
 }
 
-export type TeardownFunc = () => void;
+export type TeardownHandler = () => void;
 
-export type IntersectionChangeCallback = (change: boolean) => void;
+export type ChangeHandler = (change: boolean) => void;
 
-export interface Props {
-  element: Element;
+export interface Options {
   offsetBottom?: number;
   offsetLeft?: number;
   offsetRight?: number;
   offsetTop?: number;
-  onChange: IntersectionChangeCallback;
   throttle?: number;
 }
 
-export type Effect = (props: Props) => TeardownFunc;
+export type SetupHandler = (
+  element: HTMLElement,
+  onChange: ChangeHandler,
+  options: Options,
+) => TeardownHandler;
 
-export function io({
+export const io: SetupHandler = (
   element,
-  offsetBottom = 0,
-  offsetLeft = 0,
-  offsetRight = 0,
-  offsetTop = 0,
   onChange,
-}: Props): TeardownFunc {
+  { offsetBottom = 0, offsetLeft = 0, offsetRight = 0, offsetTop = 0 } = {},
+) => {
   /*
    * rootMargin grows/shrinks the bounding rect of the root element (the
    * viewport), while offsets apply to the element, so offsets are mapped to
@@ -61,7 +60,7 @@ export function io({
   return () => {
     observer.unobserve(element);
   };
-}
+};
 
 function isElementInDocument(element: Element) {
   return 'isConnected' in element
@@ -115,15 +114,17 @@ function isElementIntersecting(
 
 // Note: If element is removed from the document, its visibility won't be
 // recalculated until a resize/scroll event is triggered.
-export function scroll({
+export const scroll: SetupHandler = (
   element,
-  offsetBottom = 0,
-  offsetLeft = 0,
-  offsetRight = 0,
-  offsetTop = 0,
   onChange,
-  throttle = 100,
-}: Props): TeardownFunc {
+  {
+    offsetBottom = 0,
+    offsetLeft = 0,
+    offsetRight = 0,
+    offsetTop = 0,
+    throttle = 100,
+  } = {},
+) => {
   let prevInViewport: boolean;
 
   const checkViewport = () => {
@@ -152,8 +153,10 @@ export function scroll({
     window.removeEventListener('scroll', eventHandler);
     window.removeEventListener('resize', eventHandler);
   };
-}
+};
 
-export function intersection(props: Props) {
-  return intersectionObserverSupported() ? io(props) : scroll(props);
-}
+export const intersection: SetupHandler = (element, onChange, props) => {
+  return intersectionObserverSupported()
+    ? io(element, onChange, props)
+    : scroll(element, onChange, props);
+};
