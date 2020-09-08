@@ -1,10 +1,10 @@
-module.exports = (env => {
-  const isDev = env.NODE_ENV === 'dev';
+module.exports = ((env) => {
+  const isDev = env.NODE_ENV === 'development';
   const isTest = env.NODE_ENV === 'test' || 'CI' in env;
 
   if (isDev) {
     return {
-      presets: ['next/babel', '@zeit/next-typescript/babel'],
+      presets: ['next/babel'],
     };
   }
 
