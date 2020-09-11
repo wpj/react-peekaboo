@@ -1,4 +1,4 @@
-import { useEffect, useState, RefCallback } from 'react';
+import { useEffect, useMemo, useState, RefCallback } from 'react';
 
 import {
   peekaboo,
@@ -18,13 +18,25 @@ export function usePeekaboo<E extends HTMLElement>(
 ): RefCallback<E> {
   let [element, ref] = useState<E | null>(null);
 
+  // Options needs to be memoized here to handle when options are passed that
+  // are structurally identical but referentially different. Without
+  // memoization, this would trigger the useEffect to re-run.
+  let memoizedOptions = useMemo(() => options, [
+    options.enabled,
+    options.offsetBottom,
+    options.offsetLeft,
+    options.offsetRight,
+    options.offsetTop,
+    options.throttle,
+  ]);
+
   useEffect(() => {
-    if (!element || options.enabled === false) {
+    if (!element || memoizedOptions.enabled === false) {
       return undefined;
     }
 
-    return setup(element, onChange, options);
-  }, [element, onChange, options]);
+    return setup(element, onChange, memoizedOptions);
+  }, [element, onChange, memoizedOptions]);
 
   return ref;
 }

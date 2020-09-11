@@ -54,6 +54,18 @@ beforeEach(() => {
 });
 
 describe('useIsIntersecting', () => {
+  test('runs effect one time', () => {
+    mockedPeekaboo.mockImplementationOnce(
+      (_element: HTMLElement, onChange: ChangeHandler) => {
+        onChange(true);
+      },
+    );
+
+    render(<UseIntersectingTest />);
+
+    expect(mockedPeekaboo).toHaveBeenCalledTimes(1);
+  });
+
   test('returns true if element is intersecting', () => {
     mockedPeekaboo.mockImplementationOnce(
       (_element: HTMLElement, onChange: ChangeHandler) => {
@@ -86,6 +98,18 @@ describe('useIsIntersecting', () => {
 });
 
 describe('useIntersectionChange', () => {
+  test('runs effect one time', () => {
+    mockedPeekaboo.mockImplementationOnce(
+      (_element: HTMLElement, onChange: ChangeHandler) => {
+        onChange(true);
+      },
+    );
+
+    render(<UseIntersectionChangeTest />);
+
+    expect(mockedPeekaboo).toHaveBeenCalledTimes(1);
+  });
+
   test('runs onChange when element is intersecting', () => {
     mockedPeekaboo.mockImplementationOnce(
       (_element: HTMLElement, onChange: ChangeHandler) => {
