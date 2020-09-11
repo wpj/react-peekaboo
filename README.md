@@ -105,5 +105,5 @@ type SetupHandler = (
 ```
 
 Uses `setup` to run `onChange` when the element's intersection status changes.
-You can pass `scroll`, `io`, or `peekaboo` from `dom-peekaboo` or implement our
+You can pass `scroll`, `io`, or `peekaboo` from `dom-peekaboo` or implement your
 own setup function.
