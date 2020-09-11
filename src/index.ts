@@ -32,7 +32,7 @@ export function usePeekaboo<E extends HTMLElement>(
 export function useIntersectionChange<E extends HTMLElement>(
   onChange: ChangeHandler,
   options: Options = {},
-) {
+): RefCallback<E> {
   return usePeekaboo<E>(peekaboo, onChange, options);
 }
 

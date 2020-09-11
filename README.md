@@ -62,25 +62,48 @@ All functions accept a common set of options:
 
 ### Exports
 
-#### `useIntersecting: (options: Options) => boolean`
+#### `useIntersecting`
 
-Returns the element's intersection status using IntersectionObserver or
-`scroll`/`resize` event listeners and `getBoundingClientRect` in unsupported
+Type: `(options: Options) => [RefCallback, boolean]`
+
+Returns a ref and the element's intersection status using IntersectionObserver
+or `scroll`/`resize` event listeners and `getBoundingClientRect` in unsupported
 environments.
 
-#### `useIntersectionChange: (onChange: (change: boolean) => void, options: Options) => void`
+The ref returned must be attached to a DOM node.
+
+#### `useIntersectionChange`
+
+Type:
+
+```typescript
+(onChange: (isIntersecting: boolean) => void, options: Options) => RefCallback;
+```
 
 Runs a callback that receives the element's intersection status each time it
 changes using IntersectionObserver or `scroll`/`resize` event listeners and
 `getBoundingClientRect` in unsupported environments.
 
-## Caveats
+Returns a ref that must be attached to a DOM node.
 
-- This module considers edge-adjacent intersections (when the target element is
-  directly above/below/beside the viewport) to be in viewport. If you only want
-  to consider elements with pixels in the viewport as visible, you can configure
-  `offsetBottom`/`offsetLeft`/`offsetRight`/`offsetTop` to be `-1`.
-- IntersectionObserver ignores `rootMargin` in iframe contexts, which means that
-  offsets will be ignored.
-  - https://w3c.github.io/IntersectionObserver/#dom-intersectionobserver-rootmargin
-  - https://developers.google.com/web/updates/2016/04/intersectionobserver#iframe_magic
+#### `usePeekaboo`
+
+Type:
+
+```typescript
+type SetupHandler = (
+  element: HTMLElement,
+  onChange: (isIntersecting: boolean) => void,
+  options?: Options,
+) => TeardownHandler;
+
+(
+  setup: SetupHandler,
+  onChange: (isIntersecting: boolean) => void,
+  options?: Options,
+) => RefCallback;
+```
+
+Uses `setup` to run `onChange` when the element's intersection status changes.
+You can pass `scroll`, `io`, or `peekaboo` from `dom-peekaboo` or implement our
+own setup function.
