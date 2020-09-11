@@ -1,38 +1,32 @@
 # `react-peekaboo`
 
-[![Build Status](https://cloud.drone.io/api/badges/wpj/react-peekaboo/status.svg)](https://cloud.drone.io/wpj/react-peekaboo)
+[![CI Status](https://github.com/wpj/react-peekaboo/workflows/CI/badge.svg)](https://github.com/wpj/react-peekaboo/actions)
 
-React hooks for tracking an element's intersection with the viewport.
+React hooks for monitoring an element's intersection with the viewport.
 
 ## Installation
 
 ```
-yarn add react-peekaboo
-```
-
-Or
-
-```
-npm install --save react-peekaboo
+npm install react-peekaboo
 ```
 
 ## Usage
 
-```jsx
+```tsx
 import React, { useState } from 'react';
 import { useIntersecting, useIntersectionChange } from 'react-peekaboo';
 
-function IntersectionExample() {
-  const [ref, isIntersecting] = useIntersecting();
+function UseIntersectionExample() {
+  let [ref, isIntersecting] = useIntersecting<HTMLDivElement>();
 
   return (
     <div ref={ref}>I am {isIntersecting ? 'visible' : 'not visible'}.</div>
   );
 }
 
-function IntersectionChangeExample() {
-  const [isIntersecting, onChange] = useState(false);
-  const ref = useIntersectionChange(onChange);
+function UseIntersectionChangeExample() {
+  let [isIntersecting, onChange] = useState<boolean>(false);
+  let ref = useIntersectionChange<HTMLDivElement>(onChange);
 
   return (
     <div ref={ref}>I am {isIntersecting ? 'visible' : 'not visible'}.</div>
