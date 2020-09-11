@@ -32,7 +32,6 @@
   },
   "scripts": {
     "build": "microbundle build --jsx React.createElement",
-    "dev": "cross-env NODE_ENV=development next dev",
     "prebuild": "rimraf dist",
     "test": "jest",
     "typecheck": "tsc --noEmit"
