@@ -19,7 +19,6 @@
     "noUnusedParameters": true,
     "pretty": true,
     "removeComments": true,
-    "rootDir": "src",
     "strict": true,
     "strictNullChecks": true,
     "stripInternal": true,
@@ -37,7 +36,5 @@
   ],
   "exclude": [
     "node_modules",
-    "pages",
-    "test"
   ]
 }

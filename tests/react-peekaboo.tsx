@@ -10,7 +10,7 @@ jest.mock('dom-peekaboo', () => {
 
 import { peekaboo, ChangeHandler } from 'dom-peekaboo';
 
-import { useIntersecting, useIntersectionChange } from '.';
+import { useIntersecting, useIntersectionChange } from '../src';
 
 const mockedPeekaboo = peekaboo as jest.Mock;
 
@@ -32,7 +32,7 @@ function UseIntersectionChangeTest({ enabled = true }: { enabled?: boolean }) {
     enabled,
   });
 
-  let statusText;
+  let statusText: string;
 
   if (isIntersecting === null) {
     statusText = 'not initialized';
